@@ -1,0 +1,28 @@
+https://www.sciencedirect.com/science/article/pii/S1742287606000764 
+https://core.ac.uk/download/pdf/294782367.pdf 
+
+noista kolmesta
+avaa yleisesti
+md5
+fuzzy hashing
+
+https://gking.harvard.edu/files/natnotes2.pdf
+
+* Kerro tiivisteistä
+* Vertaile kryptografisia tiivisteitä ja fuzzy hasheja
+* Fuzzy hashing
+	*	Mihin käytetään
+	* Edut
+	* Toiminta
+	* CTPH
+	* Erilaiset algoritmit ja näiden toiminta
+
+----
+
+* LSH/LPH
+* Fuzzy hashing
+* Piecewise hashing (Split file, hash for each)
+	* Context triggered piecewise hashing
+		* spamsum
+		* ssdeep
+
