@@ -1,7 +1,121 @@
 \documentclass{article}
 
+\usepackage[utf8]{inputenc}
+\usepackage[finnish]{babel}
+\usepackage[babel=true, kerning=fi]{microtype}
+
 \title{Pätkäistyt hashit}
 \begin{document}
-	Hello world
+	\section*{Johdanto}
+
+	\section*{Hajautusarvoista}
+
+	Hajautusarvo on keskeinen työkalu tiedonsiirrossa.
+
+	Esimerkkeinä MD5 ja SHA-1.
+
+	\section*{Pätkäistyt hajautusarvot}
+
+	Kryptografiset hajautusfunktio tuottaa samalla syötteellä saman tuloksen.
+	Syö\-tettä prosessoidessa jokainen alkio muuttaa generoitavan hajatusarvon
+	tunnistamattomaksi. Tämä ilmiö on tärkeää kryptografisissa sovelluksissa.
+	Syötteiden vertailu ei ole mielekästä kryptografisila tiivistefunktioilla
+	- identtiset syötteet ovat todettavissa identtisiksi yhtäläisen hajautusarvon perusteella, mutta yhdenkin bitin muutos toisessa syötteessä tuottaa poikkeavan hajautusarvon. Näin ollen syötteet ole todettavissa samoiksi kryptografisella hajatusualgoritmilla, vaikka semanttisessa mielessä syötteet ovat käytännössä samat.
+
+	Tiedostoissa esiintyviä samankaltaisuuksia kutsutaan
+	\textit{homologioiksi}. Homologioiden tunnnistaminen vaatii kuitenkin
+	toisenlaita lähestymistapaa. Semanttisesti merkityksettömien erojen
+	ei ole syytä muuttaa generoitavaa hajautusarvoa tunnistamattomaksi.
+	Tätä tavoitetta tukemaan on laadittu kryptografisista hajautusfunktioista
+	poikkeava algoritmityyppi. \textit{Pätkäistyt hajautusfunktiot} tulkitsevat
+	syötettä tarkastellen alkion kontekstia. Eroavaisuudet syötteissä
+	aiheuttavat muutoksia hajautusarvoon ainoastaan paikallisesti,
+	ja hajautusarvo säilyy muilta osin lähes tulkoon muuttumattomana.
+
+	Pätkäistyn hajautusarvon generointi tapahtuu yksinkertaistetusti
+	kolmessa vaiheessa; syöte jaetaan algoritmikohtaisen logiikan
+	perusteella osiin, joille generoidaan hajautusarvo. Lopuksi saaduista
+	hajautusarvoista koostetaan palautusarvona annettava pätkäisty
+	hajautusarvo. Algoritmi palauttaa siis listan hajautusarvoja, jota
+	voidaan vertailla muihin vastaaviin hajautusarvoihin. Homologiat
+	ilmenevät pätkäistyssä hajautusarvossa identtisinä hajautusarvoina;
+	poikkeavat hajautusarvot viittaavat eroihin syötteiden välillä.
+
+	\section*{CTPH}
+
+	Konteksiriippuvainen tarkastelu voidaan toteuttaa algoritmilla, joka
+	syötteen $n$ alkion osiin, joille iteroidaan näistä alkioista riippuva
+	hajautusarvo. Tällainen algoritmi toimii kohtalaisesti saman mittaisille
+	syötteille, joissa alkioita ainoastaan korvataan toisella kajoamatta
+	itse syötteen kokoon. Syötteen koon muuttuessa alkioiden lisättäessä
+	tai poistettaessa. Tällöin muiden alkioiden sijainti syötteessä muuttuu,
+	ja koko osa siirtyy kokonaan toisen osan vaikutuspiiriin. Nämä
+	indeksimuutokset ulottuvat syötteen loppuun asti, jolloin hajautusarvo
+	voi syötemuutoksen sijainnista riippuen poiketa merkittävästi
+	alkuperäiselle syötteelle generoitavasta hajautusarvosta.
+
+	\textit{Context triggered piecewise hashing (CTPH)} on tekniikka LSH-algoritmien
+	toteuttamiseen. Välttääkseen edellä kuvatun ongelman välttääkseen
+	CTPH-algoritmit jakavat syötteen vakiokokoisten	osioiden sijaan vaihtelevan kokoisiin osioihin, jotka määräytyvät dynaamisesti syötteen sisällön
+	pohjalta. Tällöin alkion lisäys tai poisto vaikuttaa korkeintaan kahden
+	osion hajautusarvoon eikä heijastu muihin osioihin.
+
+	CTPH-algoritmeissä osiointi perustuu \textit{laukaisimiin (trigger)}.
+	Tämä \textit{rolling hashiksi} kutsuttu hajautusalgoritmi pitää yllä
+	hajautusarvoa, joka päivitetään syötettä iteroitaesa jokaisen
+	alkion perusteella. Lisäksi hajautusarvoa verrataan algoritmissa
+	määriteltyyn laukaisimeen: iteroitaessa aktivoituva laukaisin tarkoittaa
+	kontekstin muuttuvan. Vallitsevan osion alkoioille generoidaan
+	hajautusarvo, joka lisätään globaaliin hajautusarvoon. Hajautusarvon
+	generointiin käytetään tyypillisesti jotakin hajautusfunktiota, kryptografisia (MD5, SHA-1) tai ei-kryptografisia (FNV). Kuvattua menetelmää
+	toistaen syötteestä muodostuu yksi hajautusarvo, joka sisältää syötteen
+	osiosta generoidut, pääosin toisista riippumattomat alihajautusarvot.
+
+	\subsection*{Toteutuksista}
+
+	CTPH-algoritmien toteutukset poikkeavat toisistaan, ja osa lähestyy
+	ongelmaa eri tavoin. Tästä huolimatta erilaiset algoritmit jakavat
+	yhteisen perusajatuksen, eli syntaksisten homologioiden löytämisen
+	syötteestä.
+
+	\subsection*{spamsum}
+
+	Eräs varhainen CTPH-hajautusfunktio, \textit{spamsum}, tunnistaa
+	syötteissä esiintyviä samankaltaisuukia. Spamsum-algoritmin
+	totetus perustuu ajatukseen syötteen käsittelystä konteksiriippuvaisesti,
+	jolloin syötteestä tarkastellaan tyypillisesti yhden alkion sijaan
+	generoidaan riippumaton hajautusarvo jollakin tiivistefunktiolla. Tyypillisesti käytettyjä ovat kryptografiset tiivistefunktiot MD5 sekä SHA. Spamsum käyttää tähän tarkoitukseen yksinkertaista Fowler-Noll-Vo-hajautusfunktiota.
+
+	Spamsumin toiminta pohjautuu edellä esitettyyn yksinkertaistettuun
+	kuvaukseen CTPH-algoritmin toiminnasta. Käytännössä Spamsum kuitenkin
+	sisältää laajemman totetuksen.
+
+
+	\subsection*{ssdeep}
+	
+	\subsection*{SDHASH}
+	
+	\subsection*{mvHASH-B}
+
+	\section*{Haasteet}
+
+	Pätkäistyjen hajautusfunktioiden todetaan suoriutuvan kiitettävästi.
+	Erityisesti SSDEEP-funktion mainitaan kykenevän yhdistämään laajastikin
+	muuttettuja sekä puuttellisia tiedostoja alkuperäisiin. Fuzzy hashing ei
+	kuitenkaan ole aukoton tekniikka. Nämä algoritmit ovat vaikeasti
+	ennustettavia, eikä syötteiden samankaltaisuudelle ole johdettavissa
+	yleistä raja-arvoa jonka alittaessaan syötteet eivät ole samankaltaisia.
+	Algoritmi laskee numeerisen arvon, jonka tulkinta jää ihmisen vastuulle.
+	Tulkintaa vaikeuttaa myös algoritmien syntaksiin perustuvaan analyysiin -
+	hajautusarvojen vertailu ei kerro semanttisesta kontekstista lainkaan.
+
+	Datan pakkaus aiheuttaa merkittäviä haasteista pätkäistyille
+	hajautusalgoritmeille. Pätkäistyjen hajautusarvojen keskeinen käyttökohde
+	on haittaohjelmien tunnistus. Haittaohjelmien levitys sijoittuu
+	merkittävissä määrin tietoliikenteeseen, jonka pakatun datan
+	analysoinnin automatisointi ei onnistune.
+
+	\section*{Lopetus}
+
 \end{document}
 
