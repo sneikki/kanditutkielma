@@ -1,121 +1,216 @@
-\documentclass{article}
+\documentclass[10pt]{article}
 
+% \usepackage[a4paper, top=4cm, bottom=4cm, left=4cm, right=4cm]{geometry}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{csquotes}
 \usepackage[finnish]{babel}
-\usepackage[babel=true, kerning=fi]{microtype}
+\usepackage[final, babel=true, stretch=36]{microtype}
+% \usepackage{palatino}
 
-\title{Pätkäistyt hashit}
+\usepackage{setspace}
+\usepackage[style=apa]{biblatex}
+
+\usepackage{amsmath}
+
+\addbibresource{refs.bib}
+
+\setstretch{1.25}
+
+\title{Pätkäistyt hajautusarvot}
+\author{Valtteri Varvikko}
+
 \begin{document}
-	\section*{Johdanto}
+	\maketitle
 
-	\section*{Hajautusarvoista}
+	Tietojenkäsittelyssä käsitellään valtavia määriä dataa. Tiedon esittämiselle kompaktimmassa
+	muodossa on laajalti tarvetta, milloin tallennuskapasiteetin säästämisen, milloin vastaavan
+	datan tehokkaan tunnistamiseen vuoksi. Tiivistää voidaan muun muassa pakkausalgoritmeilla ja
+	hajautusfunktioilla. 
+	Pakkauksesta poiketen hajautusfunktiot tiivistävät datan palauttamattomaan muotoon.
+	Toisaalta hajautusarvo sisältää uniikin tunnisteen, jolla
+	alkuperäinen data on tunnistettavissa. Merkityksettöminkin muutos tuottaa täysin erilaisen
+	tunnisteen, eivätkä syötteet ole enää linkitettävissä toisiinsa.
+	Semanttisesta näkökulmasta muutos voi säilyttää datan samankaltaisena,
+	ja ihmissilmä löytää suurestikin poikkevista tiedostoista yhtäläisyyksiä.
+	Samankaltaisuuksien tunnistamiseen kryptografisista tiiviistefunktioista ei ole,
+	mutta niitä hyödyntävät \textit{fuzzy hash} -algoritmit mahdollistavat
+	yhtenäisten rakenteiden havaitsemisen.
 
-	Hajautusarvo on keskeinen työkalu tiedonsiirrossa.
+	\section*{Piecewise hashing}
 
-	Esimerkkeinä MD5 ja SHA-1.
-
-	\section*{Pätkäistyt hajautusarvot}
-
-	Kryptografiset hajautusfunktio tuottaa samalla syötteellä saman tuloksen.
-	Syö\-tettä prosessoidessa jokainen alkio muuttaa generoitavan hajatusarvon
-	tunnistamattomaksi. Tämä ilmiö on tärkeää kryptografisissa sovelluksissa.
-	Syötteiden vertailu ei ole mielekästä kryptografisila tiivistefunktioilla
-	- identtiset syötteet ovat todettavissa identtisiksi yhtäläisen hajautusarvon perusteella, mutta yhdenkin bitin muutos toisessa syötteessä tuottaa poikkeavan hajautusarvon. Näin ollen syötteet ole todettavissa samoiksi kryptografisella hajatusualgoritmilla, vaikka semanttisessa mielessä syötteet ovat käytännössä samat.
+	Kryptografiset hajautusfunktiot tuottavat samalla syötteellä saman tuloksen.
+	Syötettä prosessoidessa jokainen alkio muuttaa generoitavan hajatusarvon
+	edellisestä tunnistamattomaksi --- tämä ilmiö on olennainen kryptografisissa sovelluksissa
+	ja siten tarkoituksellinen.
+	Identtiset syötteet ovat todettavissa identtisiksi yhtäläisen hajautusarvon
+	perusteella, mutta yhdenkin bitin muutos tuottaa edellisestä tunnnistamattoman
+	hajautusarvon. Näin ollen samankaltaiset syötteet eivät ole tunnistettavissa
+	samankaltaisiksi kryptografisilla hajautusfunktiolla.
 
 	Tiedostoissa esiintyviä samankaltaisuuksia kutsutaan
-	\textit{homologioiksi}. Homologioiden tunnnistaminen vaatii kuitenkin
-	toisenlaita lähestymistapaa. Semanttisesti merkityksettömien erojen
-	ei ole syytä muuttaa generoitavaa hajautusarvoa tunnistamattomaksi.
+	\textit{homologioiksi} \parencite{IDENT}. Homologioiden tunnnistaminen onnistuu hajautusarvoja
+	vertaamalla, mutta tässä tapauksessa hajautusarvo tulee olla tunniste 
+	syötteessä esiintyvistä homologioista koko syötteen sijaan.
 	Tätä tavoitetta tukemaan on laadittu kryptografisista hajautusfunktioista
-	poikkeava algoritmityyppi. \textit{Pätkäistyt hajautusfunktiot} tulkitsevat
-	syötettä tarkastellen alkion kontekstia. Eroavaisuudet syötteissä
-	aiheuttavat muutoksia hajautusarvoon ainoastaan paikallisesti,
-	ja hajautusarvo säilyy muilta osin lähes tulkoon muuttumattomana.
+	poikkeava algoritmityyppi. \textit{Fuzzy hash} -algoritmit tulkitsevat
+	syötettä tarkastellen useampaa alkiota kerralla, joten alkion
+	hajautusarvoon vaikuttaa myös naapurialkioiden arvo. Näin eroavaisuudet
+	syötteissä aiheuttavat muutoksia hajautusarvoon ainoastaan paikallisesti,
+	ja hajautusarvo säilyy muilta osin lähestulkoon muuttumattomana.
 
-	Pätkäistyn hajautusarvon generointi tapahtuu yksinkertaistetusti
-	kolmessa vaiheessa; syöte jaetaan algoritmikohtaisen logiikan
-	perusteella osiin, joille generoidaan hajautusarvo. Lopuksi saaduista
-	hajautusarvoista koostetaan palautusarvona annettava pätkäisty
-	hajautusarvo. Algoritmi palauttaa siis listan hajautusarvoja, jota
-	voidaan vertailla muihin vastaaviin hajautusarvoihin. Homologiat
-	ilmenevät pätkäistyssä hajautusarvossa identtisinä hajautusarvoina;
-	poikkeavat hajautusarvot viittaavat eroihin syötteiden välillä.
+	Pätkäisty hajautusarvo voidaan toteuttaa esimerkiksi
+	algoritmilla, joka jakaa syötteen $n$ alkion osajonoiksi.
+	Alkio $a_i$, missä $i \equiv 0 \pmod{n}$, sekä sitä
+	edeltävät alkiot $a_{i - 1}, a_{i - 2}, \ldots, a_{i - n}$
+	redusoidaan esimerkiksi yhteenlaskulla skalaariksi, josta generoidaan
+	tälle osajonolle hajautusarvo. Hajautusarvo lasketaan myös syötteen
+	loppuun mahdollisesti jäävälle $n$ alkiolle. Generoidut hajautusarvot
+	palautetaan jonona, jota voidaan vertailla
+	muihin kuvatusti generoituihin hajautusarvoihin. Homologiat
+	ilmenevät hajautusarvojonossa identtisinä hajautusarvoina; poikkeavat
+	hajautusarvot taas viittaavat eroihin syötteiden välillä.
 
-	\section*{CTPH}
+	\subsection*{Context triggered piecewise hashing}
 
-	Konteksiriippuvainen tarkastelu voidaan toteuttaa algoritmilla, joka
-	syötteen $n$ alkion osiin, joille iteroidaan näistä alkioista riippuva
-	hajautusarvo. Tällainen algoritmi toimii kohtalaisesti saman mittaisille
-	syötteille, joissa alkioita ainoastaan korvataan toisella kajoamatta
-	itse syötteen kokoon. Syötteen koon muuttuessa alkioiden lisättäessä
-	tai poistettaessa. Tällöin muiden alkioiden sijainti syötteessä muuttuu,
-	ja koko osa siirtyy kokonaan toisen osan vaikutuspiiriin. Nämä
-	indeksimuutokset ulottuvat syötteen loppuun asti, jolloin hajautusarvo
-	voi syötemuutoksen sijainnista riippuen poiketa merkittävästi
-	alkuperäiselle syötteelle generoitavasta hajautusarvosta.
+	Edellä kuvattu ratkaisu toimii kohtalaisesti samanmittaisille
+	syötteille, joissa alkioita on ainoastaan korvattu toisella
+	kajoamatta syötteen pituuteen.
+	Tulos kuitenkin häiriintyy pahasti, jos
+	syötteen koko muuttuu alkuperäiseen verrattuna alkioita
+	lisättäessä tai poistettaessa. Muiden alkioiden
+	sijainti syötteessä vaihtuu, ja seuraavat osajonot sisältävät
+	useimmiten alkuperäisestä poikkeavan alkiojonon.
+	Muutokset ulottuvat syötteen loppuun asti, jolloin
+	jokainen muuttunut osajono tuottaa alkuperäisestä
+	poikkeavan hajautusarvon. Algoritmin palauttama hajautusarvojono
+	saattaa merkittävästi poiketa alkuperäiselle syötteelle
+	generoidusta hajautusarvostajonosta, ja sattumanvaraisen syötteen
+	alusta poistettu alkio tuottanee kryptografisen hajautusfunktion
+	tavoin aiemmasta täysin tunnistamattoman hajautusarvon.
+	Hajautusarvo muuttuu sitä enemmän, mitä pienempään syötteen
+	indeksiin alkion lisäys tai poisto kohdistuu.
 
-	\textit{Context triggered piecewise hashing (CTPH)} on tekniikka LSH-algoritmien
-	toteuttamiseen. Välttääkseen edellä kuvatun ongelman välttääkseen
-	CTPH-algoritmit jakavat syötteen vakiokokoisten	osioiden sijaan vaihtelevan kokoisiin osioihin, jotka määräytyvät dynaamisesti syötteen sisällön
-	pohjalta. Tällöin alkion lisäys tai poisto vaikuttaa korkeintaan kahden
-	osion hajautusarvoon eikä heijastu muihin osioihin.
+	\textit{Context triggered piecewise hashing (CTPH)} on tekniikka
+	\textit{fuzzy hash} -algoritmien toteuttamiseen. Välttääkseen edellä kuvatun ongelman
+	CTPH-algoritmit jakavat syötteen vakiokokoisten osajonojen
+	sijaan vaihtelevan kokoisiin osajonoihin, jotka määräytyvät dynaamisesti
+	syötteen sisällön perusteella. Tällöin alkion lisäys tai poisto vaikuttaa
+	ihanteellisesti yhden, ja enimmilläänkin vain lähimpien osajonojen
+	hajautusarvoon eikä heijastu muihin osajonoihin.
 
-	CTPH-algoritmeissä osiointi perustuu \textit{laukaisimiin (trigger)}.
-	Tämä \textit{rolling hashiksi} kutsuttu hajautusalgoritmi pitää yllä
-	hajautusarvoa, joka päivitetään syötettä iteroitaesa jokaisen
-	alkion perusteella. Lisäksi hajautusarvoa verrataan algoritmissa
-	määriteltyyn laukaisimeen: iteroitaessa aktivoituva laukaisin tarkoittaa
-	kontekstin muuttuvan. Vallitsevan osion alkoioille generoidaan
-	hajautusarvo, joka lisätään globaaliin hajautusarvoon. Hajautusarvon
-	generointiin käytetään tyypillisesti jotakin hajautusfunktiota, kryptografisia (MD5, SHA-1) tai ei-kryptografisia (FNV). Kuvattua menetelmää
-	toistaen syötteestä muodostuu yksi hajautusarvo, joka sisältää syötteen
-	osiosta generoidut, pääosin toisista riippumattomat alihajautusarvot.
+	Monissa CTPH-algoritmeissa osiointi perustuu \textit{laukaisimiin (trigger)},
+	joilla määritetään osajonon päätepiste alkion kontekstin perusteella \parencite{IDENT}. Laukaisin
+	aktivoituu tietyllä syötteestä generoidulla arvolla ja ilmaisee
+	määritellyn kokonaisuuden päättymistä. Käytännössä konteksti tarkoittaa
+	alkion lähimmissä indekseissä olevia alkioita, joten kontekstille generoitu 
+	hajautusarvo on riippuvinen useamman alkion yhdessä määrittämästä kokonaisuudesta.
+	Etu \textit{piecewise hasheihin} on syötteen osiointi
+	kontekstin perusteella vakiokokoisten osajonojen sijaan.
+
+	Kontekstin tunnistaminen onnistuu \textit{rolling hash} -hajautusfunktiolla. Hajautusarvo
+	lasketaan syötettä iteroidessa jokaiselle alkiolle rekursiivisesti huomioiden muut tietyn
+	ehdon täyttävät alkiot. Usein tämä ehto tarkoittaa syötteen viimeisimpiä alkiota.
+	Hajautusarvon $h$ generointia alkiolle $a_i$ sekä viimeisimmille $n$ alkiolle voidaan
+	havainnollistaa hajautusfunktion $R$ rekursiivisena kutsuna 
+	\[h = R(a_i, R(a_{i-1}, R(a_{i-2}, \ldots, R(a_{i - n + 1}, a_{i - n}) \ldots ))).\]
+	Arvoa laskiessa ei käytännössä ole tarpeen laskea jokaiselle edelliselle alkiolle
+	hajautusarvoa, koska viimeisin hajautusarvo on
+	jo laskettu edeltävistä alkioista. Uusi hajautusarvo on laskettavissa
+	hyödyntämällä viimeksi generoitua hajautusarvoa, josta poistetaan
+	hajautuksesta riippuen vanhimman alkion vaikutus esimerkiksi loogisilla operaatioilla.
+
+	Mikäli \textit{rolling hash} aktivoi laukaisimeen,
+	hajautusarvojonoon lisätään vallitsevan osajonon
+	alkioille generoitu hajautusarvo.
+	Hajautusarvon generointiin käytetään tyypillisesti perinteistä
+	hajautusfunktiota, kryptografisia (MD5, SHA-1 tms.) tai ei-kryptografisia (FNV tms.).
+	Kuvattua menetelmää toistaen syötteestä muodostuu hajautusarvojono,
+		joka sisältää syötteen osajonoista generoidut, toisistaan
+		riippumattomat hajautusarvot.
 
 	\subsection*{Toteutuksista}
 
-	CTPH-algoritmien toteutukset poikkeavat toisistaan, ja osa lähestyy
-	ongelmaa eri tavoin. Tästä huolimatta erilaiset algoritmit jakavat
-	yhteisen perusajatuksen, eli syntaksisten homologioiden löytämisen
+	CTPH-toteutuksia on markkinoilla useita, kuten ssdeep, SDHASH ja mvHASH-B.
+	Eri algoritmien toteutukset voivat poikkeavat toisistaan, ja osa lähestyy
+	yhteistä ongelmaa erilaisesta näkökulmasta. Tästä huolimatta algoritmit
+	jakavat yhteisen perusajatuksen, eli syntaksisten homologioiden löytämisen
 	syötteestä.
 
-	\subsection*{spamsum}
-
+	\paragraph{spamsum}
 	Eräs varhainen CTPH-hajautusfunktio, \textit{spamsum}, tunnistaa
-	syötteissä esiintyviä samankaltaisuukia. Spamsum-algoritmin
-	totetus perustuu ajatukseen syötteen käsittelystä konteksiriippuvaisesti,
-	jolloin syötteestä tarkastellaan tyypillisesti yhden alkion sijaan
-	generoidaan riippumaton hajautusarvo jollakin tiivistefunktiolla. Tyypillisesti käytettyjä ovat kryptografiset tiivistefunktiot MD5 sekä SHA. Spamsum käyttää tähän tarkoitukseen yksinkertaista Fowler-Noll-Vo-hajautusfunktiota.
+	syötteissä esiintyviä samankaltaisuuksia. spamsum-algoritmin
+	totetus perustuu CPTH-tekniikan ajatukseen syötteen käsittelystä konteksiriippuvaisesti
+	ja seuraa pääpiirteissään edellä esitettyä kuvausta CTPH-algoritmin toiminnasta.
+	Suorituksen alussa spamsum määrittää laukaisimen arvoksi \textit{block sizen},
+	joka lasketaan syötteen perusteella.
+	Syöttettä iteroitaessa \textit{rolling hashia} päivitetään alkiolle FNV-tiivistefunktion
+	generoimalla tiivistellä \parencite{IDENT}. 
 
-	Spamsumin toiminta pohjautuu edellä esitettyyn yksinkertaistettuun
-	kuvaukseen CTPH-algoritmin toiminnasta. Käytännössä Spamsum kuitenkin
-	sisältää laajemman totetuksen.
+	Hajautusarvojen vertailu vaatii näiden generoinnissa käytetyn
+	\textit{block sizen}. Koska \textit{block size} on riippuvainen syötteestä,
+	se palautetaan yhdessä hajautusarvon kanssa. spamsum iteroi
+	syötteen kahdesti, sekä \textit{block sizella} $b$ että $2b$.
+	Näin saadaan parannettua hajautusarvojen vertailumahdollisuutta, ja
+	hajautusarvoja $i$ ja $j$ vertaillessa on täytyttävä joko
+	$b_i = b_j$, $2b_i = b_j$ tai $b_i = 2b_j$. Hajautusarvoa $i$ voi
+	siis verrata toiseen hajautusarvoon, jonka \textit{block size} on joko $b_j$ tai kahden potenssi.
 
+	\paragraph{ssdeep}
+	spamsum-algoritmin pohjalta on kehitetty ssdeep-ohjelmisto
+	konteksiriippuvaisten hajautusarvojen käsittelyyn \parencite{SSDEEP}. ssdeepin
+	hajautusarvojen generointi toimii jokseenkin samoin kuin
+	spamsumin. ssdeep generoi syötteestä konteksiriippuvaisen
+	hajautusarvon. spamsumin tavoin
+	hajautusarvo koostuu peräkkäisistä osajonoille generoiduista
+	hajautusarvoista sekä käytetystä \textit{block sizesta}.
 
-	\subsection*{ssdeep}
-	
-	\subsection*{SDHASH}
-	
-	\subsection*{mvHASH-B}
+	ssdeepiä käytetään laajasti monenlaisiin käyttötarkoituksiin
+	ollen alansa de facto -standardi \parencite{SSDEEP}.
+	Eräs keskeinen alue on tietoturva, jossa ssdeepiä
+	sekä vastaavia ohjelmistoja voidan käyttää tunnistamaan
+	haittaohjelmia. Tyypillisesti yksittäisen hyökkääjätahon
+	menettelyssä esiintyy kaavamaisia piirteitä, ja hyökkääjä
+	saattaa esimerkiksi käyttää paikoitellen samaa koodia eri
+	ohjelmissa \parencite{RANSO}. ssdeep voi tunnistaa muita, saman tahon laatimia
+	haittaohjelmia yhdestä, haittaohjelmaksi todetun ohjelman
+	lähdekoodista generoidusta CTPH:sta vertaamalla sitä
+	em.\ epäiltyjen haittaohjelmien hajautusarvoihin.
 
-	\section*{Haasteet}
-
-	Pätkäistyjen hajautusfunktioiden todetaan suoriutuvan kiitettävästi.
-	Erityisesti SSDEEP-funktion mainitaan kykenevän yhdistämään laajastikin
-	muuttettuja sekä puuttellisia tiedostoja alkuperäisiin. Fuzzy hashing ei
+	\paragraph{Heikkoudet}
+	\textit{Fuzzy hash} -algoritmien havaitaan suoriutuvan kiitettävästi \parencite{RANSO}.
+	Erityisesti ssdeep-funktion mainitaan kykenevän yhdistämään laajastikin
+	muuttettuja sekä puuttellisia tiedostoja alkuperäisiin. \textit{Fuzzy hashing} ei
 	kuitenkaan ole aukoton tekniikka. Nämä algoritmit ovat vaikeasti
 	ennustettavia, eikä syötteiden samankaltaisuudelle ole johdettavissa
-	yleistä raja-arvoa jonka alittaessaan syötteet eivät ole samankaltaisia.
-	Algoritmi laskee numeerisen arvon, jonka tulkinta jää ihmisen vastuulle.
-	Tulkintaa vaikeuttaa myös algoritmien syntaksiin perustuvaan analyysiin -
-	hajautusarvojen vertailu ei kerro semanttisesta kontekstista lainkaan.
+	yleistä raja-arvoa, jonka alittaessaan syötteet eivät ole enää samankaltaisia.
+	Samankaltaisuus tietyssä tilanteessa ei ole laskettavissa oleva ongelma,
+	vaan ohjelman käyttäjän subjektiivinen näkemys.
+	Tulkintaa vaikeuttaa myös algoritmien syntaksiin perustuvaan analyysiin
+	--- hajautusarvojen vertailu ei kerro syötteen semanttisesta kontekstista.
 
-	Datan pakkaus aiheuttaa merkittäviä haasteista pätkäistyille
-	hajautusalgoritmeille. Pätkäistyjen hajautusarvojen keskeinen käyttökohde
-	on haittaohjelmien tunnistus. Haittaohjelmien levitys sijoittuu
-	merkittävissä määrin tietoliikenteeseen, jonka pakatun datan
+	Datan pakkaus aiheuttaa merkittäviä haasteita \textit{fuzzy hash}
+	-hajautusfunktioille \parencite{RANSO}. Ne eivät juurikaan kykene käsittelemään
+	samankaltaisesta datasta generoituja hajautusarvoja.
+	Eräs keskeinen \textit{fuzzy hashien} käyttökohde
+	on tunnistaa haittaohjelmia, joiden levitys keskittyy
+	merkittävissä määrin juuri tietoliikenteeseen jonka pakatun datan
 	analysoinnin automatisointi ei onnistune.
 
-	\section*{Lopetus}
-
+	\paragraph{}
+	\textit{Fuzzy hashing} ei ole innovaationa tuoreimmasta päästä, mutta sittemmin
+	sille on luotu monenlaisia käyttökohteita. Enenevissä määrin tarvitaan
+	eksaktin yhtäläisyyden lisäksi samankaltaisuuksien tunnistamista ja
+	luokittelua. CTPH-algoritmeilla voidaan 
+	vähentää toisteisuutta,
+	tunnistaa haittaohjelmia tai
+	löytää puutteellisen tiedoston alkuperäinen kappale rikostutkinnassa.
+	Huomioitavaa on,
+	että tulokset ovat numeerisia parametrejä,
+	joista ei voi tilannesidonnaisuuden vuoksi johtaa yleispätevää mallia.
+	Algoritmi tunnistaa ainoastaan homologiat,
+	ihmisen tulee edelleen päättää, mitä saadusta tuloksesta
+	kussakin tilanteesssa seuraa.
+	\printbibliography{}
 \end{document}
 
