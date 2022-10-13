@@ -1,3 +1,13 @@
 *.aux
 *.log
+*.db.lock
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.run.xml
+*.synctex.gz
+
 
