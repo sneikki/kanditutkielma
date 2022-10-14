@@ -12,6 +12,7 @@
 \usepackage[style=apa]{biblatex}
 
 \usepackage{amsmath}
+\usepackage{amssymb}
 
 \addbibresource{refs.bib}
 
@@ -24,15 +25,14 @@
 	\maketitle
 
 	Tietojenkäsittelyssä käsitellään valtavia määriä dataa. Tiedon esittämiselle kompaktimmassa
-	muodossa on laajalti tarvetta, milloin tallennuskapasiteetin säästämisen, milloin vastaavan
+	muodossa on laajalti tarvetta, milloin tallennuskapasiteetin säästämisen, milloin
 	datan tehokkaan tunnistamiseen vuoksi. Tiivistää voidaan muun muassa pakkausalgoritmeilla ja
 	hajautusfunktioilla. 
 	Pakkauksesta poiketen hajautusfunktiot tiivistävät datan palauttamattomaan muotoon.
 	Toisaalta hajautusarvo sisältää uniikin tunnisteen, jolla
-	alkuperäinen data on tunnistettavissa. Merkityksettöminkin muutos tuottaa täysin erilaisen
-	tunnisteen, eivätkä syötteet ole enää linkitettävissä toisiinsa.
-	Semanttisesta näkökulmasta muutos voi säilyttää datan samankaltaisena,
-	ja ihmissilmä löytää suurestikin poikkevista tiedostoista yhtäläisyyksiä.
+	alkuperäinen data on tunnistettavissa. 
+	Ihmissilmä löytää suurestikin poikkevista tiedostoista yhtäläisyyksiä,
+	mutta monet hajautusfunktiot tuottavat pääosin aivan eri arvon.
 	Samankaltaisuuksien tunnistamiseen kryptografisista tiiviistefunktioista ei ole,
 	mutta niitä hyödyntävät \textit{fuzzy hash} -algoritmit mahdollistavat
 	yhtenäisten rakenteiden havaitsemisen.
@@ -48,11 +48,11 @@
 	hajautusarvon. Näin ollen samankaltaiset syötteet eivät ole tunnistettavissa
 	samankaltaisiksi kryptografisilla hajautusfunktiolla.
 
-	Tiedostoissa esiintyviä samankaltaisuuksia kutsutaan
+	Syötteesä esiintyviä samankaltaisuuksia kutsutaan
 	\textit{homologioiksi} \parencite{IDENT}. Homologioiden tunnnistaminen onnistuu hajautusarvoja
-	vertaamalla, mutta tässä tapauksessa hajautusarvo tulee olla tunniste 
-	syötteessä esiintyvistä homologioista koko syötteen sijaan.
-	Tätä tavoitetta tukemaan on laadittu kryptografisista hajautusfunktioista
+	vertaamalla, mutta tässä tapauksessa hajautusarvo on johdettava
+	syötteessä esiintyvien homologioiden rajaamista osajonoista koko syötteen sijaan.
+	Tätä tavoitetta ratkisemaan on laadittu kryptografisista hajautusfunktioista
 	poikkeava algoritmityyppi. \textit{Fuzzy hash} -algoritmit tulkitsevat
 	syötettä tarkastellen useampaa alkiota kerralla, joten alkion
 	hajautusarvoon vaikuttaa myös naapurialkioiden arvo. Näin eroavaisuudet
@@ -61,11 +61,11 @@
 
 	Pätkäisty hajautusarvo voidaan toteuttaa esimerkiksi
 	algoritmilla, joka jakaa syötteen $n$ alkion osajonoiksi.
-	Alkio $a_i$, missä $i \equiv 0 \pmod{n}$, sekä sitä
+	Alkio $a_i$, missä $n \mid i$, sekä sitä
 	edeltävät alkiot $a_{i - 1}, a_{i - 2}, \ldots, a_{i - n}$
 	redusoidaan esimerkiksi yhteenlaskulla skalaariksi, josta generoidaan
 	tälle osajonolle hajautusarvo. Hajautusarvo lasketaan myös syötteen
-	loppuun mahdollisesti jäävälle $n$ alkiolle. Generoidut hajautusarvot
+	loppuun mahdollisesti jääville alle $n$ alkiolle. Generoidut hajautusarvot
 	palautetaan jonona, jota voidaan vertailla
 	muihin kuvatusti generoituihin hajautusarvoihin. Homologiat
 	ilmenevät hajautusarvojonossa identtisinä hajautusarvoina; poikkeavat
@@ -132,10 +132,10 @@
 	\subsection*{Toteutuksista}
 
 	CTPH-toteutuksia on markkinoilla useita, kuten ssdeep, SDHASH ja mvHASH-B.
-	Eri algoritmien toteutukset voivat poikkeavat toisistaan, ja osa lähestyy
-	yhteistä ongelmaa erilaisesta näkökulmasta. Tästä huolimatta algoritmit
-	jakavat yhteisen perusajatuksen, eli syntaksisten homologioiden löytämisen
-	syötteestä.
+	Eri algoritmien toteutukset poikkeavat toisistaan, ja osa lähestyy
+	ongelmaa erilaisesta näkökulmasta. Tästä huolimatta algoritmit
+	jakavat yhteisen dilemman, kuinka löytää samankaltaisuuksia ja
+	toistuvien rakenteita mistä tahansa annetusta syötteestä.
 
 	\paragraph{spamsum}
 	Eräs varhainen CTPH-hajautusfunktio, \textit{spamsum}, tunnistaa
@@ -144,8 +144,8 @@
 	ja seuraa pääpiirteissään edellä esitettyä kuvausta CTPH-algoritmin toiminnasta.
 	Suorituksen alussa spamsum määrittää laukaisimen arvoksi \textit{block sizen},
 	joka lasketaan syötteen perusteella.
-	Syöttettä iteroitaessa \textit{rolling hashia} päivitetään alkiolle FNV-tiivistefunktion
-	generoimalla tiivistellä \parencite{IDENT}. 
+	Syöttettä iteroitaessa \textit{rolling hashia} päivitetään FNV-tiivistefunktion
+	alkiolle generoimalla tiivistellä \parencite{IDENT}. 
 
 	Hajautusarvojen vertailu vaatii näiden generoinnissa käytetyn
 	\textit{block sizen}. Koska \textit{block size} on riippuvainen syötteestä,
@@ -153,7 +153,7 @@
 	syötteen kahdesti, sekä \textit{block sizella} $b$ että $2b$.
 	Näin saadaan parannettua hajautusarvojen vertailumahdollisuutta, ja
 	hajautusarvoja $i$ ja $j$ vertaillessa on täytyttävä joko
-	$b_i = b_j$, $2b_i = b_j$ tai $b_i = 2b_j$. Hajautusarvoa $i$ voi
+	$b_i = b_j$, $2b_i = b_j$ tai $b_i = 2b_j$ \parencite{IDENT}. Hajautusarvoa $i$ voi
 	siis verrata toiseen hajautusarvoon, jonka \textit{block size} on joko $b_j$ tai kahden potenssi.
 
 	\paragraph{ssdeep}
@@ -185,8 +185,8 @@
 	ennustettavia, eikä syötteiden samankaltaisuudelle ole johdettavissa
 	yleistä raja-arvoa, jonka alittaessaan syötteet eivät ole enää samankaltaisia.
 	Samankaltaisuus tietyssä tilanteessa ei ole laskettavissa oleva ongelma,
-	vaan ohjelman käyttäjän subjektiivinen näkemys.
-	Tulkintaa vaikeuttaa myös algoritmien syntaksiin perustuvaan analyysiin
+	vaan ohjelman käyttäjän näkemys perusten vallitseviin olosuhteisiin.
+	Tulkintaa vaikeuttaa myös algoritmien syntaksiin perustuva analyysi
 	--- hajautusarvojen vertailu ei kerro syötteen semanttisesta kontekstista.
 
 	Datan pakkaus aiheuttaa merkittäviä haasteita \textit{fuzzy hash}
