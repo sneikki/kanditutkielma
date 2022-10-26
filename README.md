@@ -1,6 +1,6 @@
- # Bachelor's thesis
+# Bachelor's thesis
 
-# Dependencies 
+## Dependencies 
 
  Install packages required by the thesis template (tllocalmgr is required):
 
