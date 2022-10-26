@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+dependency_path=$1
+
+if ! command -v tllocalmgr > /dev/null; then
+	echo "tllocalmgr is required"
+	exit 1
+fi
+
+if [ ! -f "$dependency_path" ]; then
+	echo "invalid dependency file"
+	exit 1
+fi
+
+cat "$dependency_path" | xargs tllocalmgr install
+
