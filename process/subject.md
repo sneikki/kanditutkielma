@@ -24,3 +24,7 @@ Context triggered piecewise hashing / fuzzy hashing
 * Hajautusfunktiot
 	*	MD5, SHA, FNV
 
+## Keywords
+
+* algorithms
+* hash functions
