@@ -1,4 +1,28 @@
+TLSH -- A Locality Sensitive Hash
 https://ieeexplore.ieee.org/abstract/document/6754635
+
+Lempel-Ziv Jaccard Distance, an effective alternative to ssdeep and sdhash
 https://www.sciencedirect.com/science/article/abs/pii/S1742287617302566
+
+An Efficient Piecewise Hashing Method for Computer Forensics
 https://ieeexplore.ieee.org/abstract/document/4470474
 
+A Comprehensive Review on Malware Detection Approaches”
+https://ieeexplore.ieee.org/document/8949524
+
+Anti-forensics in ssdeep similarity hashing
+https://ermerins.com/assets/docs/simhashing.pdf
+
+Identifying almost identical files using context triggered piecewise hashing
+https://www.sciencedirect.com/science/article/pii/S1742287606000764
+
+A Ransomware Detection Method Using Fuzzy Hashing for Mitigating the Risk of Occlusion of Information Systems
+https://ieeexplore.ieee.org/document/8984540
+
+Using Randomization to Attack Similarity Digests
+
+Beyond Precision and Recall: Understanding Uses (and Misuses) of Similarity Hashes in Binary Analysis
+https://pagabuc.me/docs/codaspy18_pagani.pdf
+
+ssdeep
+https://ssdeep-project.github.io/ssdeep/index.html
