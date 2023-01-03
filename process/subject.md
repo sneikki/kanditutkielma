@@ -1,27 +1,29 @@
 # Tutkielman aihe
 
-Context triggered piecewise hashing / fuzzy hashing
+Fuzzy hashing
 
 # Käsiteltvät aiheet
 
 ## Pohjustus
 
-* Locality sensitive hashing
-* Piecewise hashing
+* Family of locality sensitive hashing
+* What is LSH
 
 ## Substanssi
-
-* Context triggered piecewise hashing
 
 ### Implementaatiot
 
 * ssdeep
+	* type: fuzzy/context-triggered-piecewise-hash
 * sdhash
+	* type: fuzzy/statistically-impropbable-features OR fuzzy/block-based-hash
 * mvhash-b
+	* type: bbh
+	* majority voting
 
 ### Aihetta tukevat konseptit
 * Bloom filterit
-* Hajautusfunktiot
+* Kryptografiset tiivisteet
 	*	MD5, SHA, FNV
 
 ## Keywords

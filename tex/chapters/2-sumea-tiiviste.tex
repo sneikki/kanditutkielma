@@ -1,0 +1,177 @@
+\chapter{Sumea tiiviste\label{fuzzy-hash}}
+
+% 4
+
+Kryptografisia tiivisteitä käytetään laajasti datan tunnistamiseen \parencite{kornblum06}. Ne tuottavat
+samalla syötteellä saman tiivisteen, ja data voidaan lähes varmuudella tunnistaa
+samaksi yhtäläisen tiivisteen perusteella. Pieninkin muutos syötteessä tuottaa
+kuitenkin aiemmasta tunnistamattoman tiivisteen. Vertailu kryptografisilla
+tiivisteillä ei ole soveltuva keino samankaltaisten syötteiden tunnistamiseen
+\citep{kornblum06}.
+
+Samankaltaisuuden tunnistamista varten kehitetyillä sumeilla tiivisteillä
+voidaan vaivatta tunnistaa toisistaan eroavia samankaltaisia syötteitä \parencite{kornblum06}. Sumeat
+tiivisteet mahdollistavat suurestikin muutettujen tai puutteellisten tiedostojen
+yhdistämisen alkuperäiseen versioon. Samanakaltaisuuksien tunnistamisella
+on merkitystä myös haittaohjelma-analyysissa. Haittaohjelmia
+kehittävillä tahoilla on taipumus toistaa kaavamaisia piirteitä,
+joten yhden tunnistetun haittaohjelman avulla voidaan mahdollisesti
+havaita muitakin haittaohjelmia \parencite{naik19}.
+
+Tässä tutkielmassa sumeat tiivisteet jaetaan toimintaperiaatteen
+mukaan luokkiin perustuen luokitukseen, jonka \textcite{martin-perez21}
+esittelevät.
+Tiivisteet on jaettu ominaisuuksiensa perusteella kolmeen luokkaan.
+Seuraavassa aliluvussa käsitellään sumeiden tiivistefunktioiden
+toimintaa yleisellä tasolla. Viimeisissä aliluvuissa käsitellään
+kaksi sumeiden tiivisteiden luokkaa: tiivistetyt ominaisuusjonot sekä
+tavujonot.
+
+\section{Tiivistäminen ja vertailu}
+
+Samankaltaisuuksia tunnistavia algoritmeja laatiessa keskitytään
+koko syötteen tarkastelun sijaan pieniin osioihin.
+Olennaista ei ole tunnistaa täsmälleen tietynlaista syötettä,
+vaan löytää syötteestä vertailuun sopivia säännönmukaisuuksia. Näitä
+rakenteita kutstuaan usein ominaisuuksiksi \parencite{martin-perez21}.
+Ominaisuuksien valintakriteerit ja vertauslogiikka riippuvat
+käytetystä algoritmista.
+
+Monet algoritmit muodostavat sumean tiivisteen jonosta, joka
+sisältää syötteestä valitut ominaisuudet tiivistettynä \parencite{martin-perez21}.
+Osa tiivisteistä tiivistää koko syötteen, toisaalta
+osa tiivistää ainoastaan osan. Huomionarvoista
+on, että ominaisuuksien tiivistämiseen käytetään
+sumeisssakin tiivisteissä kryptografisia tiivisteitä \parencite{kornblum06}.
+Datan samankaltaisuuden vertailu sumeilla tiivisteillä etenee
+vertaillen tiivistettyjä ominaisuuksia koko tiivisteen sijaan.
+Samankaltaisuuden mittarina käytettävä ominaisuuksien
+vertailufunktio riippuu käytetystä algoritmista.
+
+\section{Tiivistetyt ominaisuusjonot}
+
+Ominaisuusjonojen tiivistäminen on sumeiden tiivisteiden luokka,
+johon kuuluu useita laajalti käytettyjä tiivisteitä. \textcite{martin-perez21}
+esittävät tiivistetyt ominaisuusjonot yhtenä kolmesta tiivisteluokasta.
+Tässä lähestymistavassa tarkastellaan ominaisuuksista
+muodostuvia jonoja, eli syötteestä etsitään ominaisuuksia,
+jotka tiivistetään jonoksi. Piirteen määrittely sekä
+valinta on algoritmikohtaista.
+
+\begin{table}[h]
+   \centering
+   \caption{Merkkijonolle luotu tiiviste, joka on määritelty paloittain.}
+   \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|} 
+      \hline
+      h & e & i                  &  & m & a                & a & i & l               & m & a & !                \\ 
+      \hline
+      \multicolumn{3}{|c|}{7b}   & \multicolumn{3}{c|}{7f} & \multicolumn{3}{c|}{e5} & \multicolumn{3}{c|}{53}  \\
+      \hline
+   \end{tabular}
+\end{table}
+
+Tiivistetty ominaisuusjono voidaan muodostaa määrittelemällä
+tiiviste paloittain \parencite{martin-perez21}. Syöte jaetaan lohkoihin,
+jolloin suuresta syötteestä muodostuu jono vertailtavia ominaisuuksia. 
+Yksinkertaisessa paloittaisessa määrittelyssä syöte jaetaan
+vakiokokoisiin lohkoihin, jotka kuvaavat syötteen ominaisuuksia
+\parencite{kornblum06}.
+Paloittain määritelty tiiviste muodostuu siis jonosta tiivistettyjä
+lohkoja $H_i = R(a_j, a_{j - 1}, a_{j - 2}, \dots, a_{j - n})$,
+missä $n$ käytetty lohkokoko ja $j = in$. Menetelmää havainnollistetaan
+taulukossa 2.1, jossa syötteen lohkoille generoidaan tiivisteet
+CRC-8-tiivistefunktiolla lohkokoon ollessa $n = 3$.
+
+\begin{table}[h]
+   \centering
+   \caption{Paloittain määritelty tiiviste merkkijonolle, jossa merkkejä
+      on vaihdettu.}
+   \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|} 
+      \hline
+      \textcolor{red}{h} & e & i                  &  & m & a                & a & i & l               & m & a & \textcolor{red}{?}                \\ 
+      \hline
+      \multicolumn{3}{|c|}{\textcolor{red}{38}}   & \multicolumn{3}{c|}{7f} & \multicolumn{3}{c|}{e5} & \multicolumn{3}{c|}{\textcolor{red}{09}}  \\
+      \hline
+   \end{tabular}
+\end{table}
+
+Taulukossa 2.2 on kuvattu muutoksia, jotka aiheutuvat, kun syötteen
+alkioita vaihdetaan. Koska syötteen pituus säilyy muuttumattomana, muutokset
+heijastuvat ainoastaan lohkoihin, joissa muutoksia on tapahtunut; keskimmäisten
+lohkojen tiivisteet eivät ole muuttuneet lainkaan. Sen sijaan taulukossa 2.3
+huomataan algoritmin toiminnan häiriintyvän pahasti, kun syötteen pituus muuttuu.
+Alkion lisäys tai poisto muuttaa kyseistä alkiota seuraavien alkoiden indeksiä.
+Syötteen alkuun lisätty alkio johtaa pahimmillaan kaikkien seuraavien lohkojen
+tiivisteen muuttumisen tunnistamattomaksi.
+
+\begin{table}[h]
+   \centering
+   \caption{Paloittain määritelty tiiviste johon on lisätty merkki.}
+   \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|} 
+      \hline
+      H & e & i                  & \textcolor{red}{,} &  & m                & a & a & i                                & l & m & a                                & !                    \\ 
+      \hline
+      \multicolumn{3}{|c|}{7b}   & \multicolumn{3}{c|}{\textcolor{red}{e9}} & \multicolumn{3}{c|}{\textcolor{red}{54}} & \multicolumn{3}{c|}{\textcolor{red}{03}} & \textcolor{red}{e7}  \\
+      \hline
+   \end{tabular}
+\end{table}
+
+Vakiokokoisilla lohkoilla esiintyvä ongelma ratkeaa, kun lohko sisältää saman
+alkiojonon lisäyksistä riippumatta \parencite{kornblum06}. Kontekstiriippuvaisessa paloittaisessa tiivistyksessä
+lohkot määritetään syötteen perusteella. Algoritmin toimintaperiaatteena on jakaa syöte
+lohkoiksi siten, että lohkot sisältävät algoritmille määritellyn kontekstin.
+Kontekstiriippuva paloittain määritelty tiiviste ei ole herkkä syötteen pituuden
+muuttumisel le. Lisäämistä ja poistamisesta vaikuttaa ihanteellisesti yhden,
+ja enimmilläänkin vain lähimpien naapurilohkojen tiivisteisiin eikä heijastu muihin lohkoihin.
+
+Paloittaisen määritettelyn lisäksi sumeaa tiivistystä on lähestytty muilla tavoilla.
+lohkoihin jakamisen sijaan syötteeestä voidaan etsiä tilastollisesti poikkeavia
+piirteitä. Poikkeavia piirteitä havainnoiva algoritmi valitsee tietyn määrän
+poikkeavimpia piirteitä ja tiivistää ne \citep{roussev10}. Varsinainen sumea tiiviste muodostuu
+valittujen piirteiden tiivisteistä. Paloittain määriteltyjen tiivisteiden tavoin
+tiivistämiseen käytetään kryptografista tiivistefunktiota. Huomionarvoista on,
+että yleensä tiivistettäväksi valitut ominaisuudet kattavat syötteestä ainoastaan osan \citep{martin-perez21}.
+Syötteestä ei siis tiivistetä kuin osa, toisin kuin paloittain määritteltäessä.
+
+Poikkeavuudet säilyttävän tiivisteen lähestymistavassa tulkitaan,
+että samalla tavalla merkittävästi poikkeavat syötteet liittyvät
+toisiinsa. Ei siis ole todennäköistä, että satunnaisissa syötteissä
+esiintyisi suuri määrä samoja, epätyypillisiä piirteitä. Kuvatussa
+tilanteessa on pääteltävissä syötteiden olevan mitä luultavimmin
+peräisin samasta alkuperästä, ja piirteet ovat muokkausten jälkeen
+jääneet yhdistäväksi tekijäksi. Tällöin voidaan tehdä johtopäätös
+ja olettaa syötteiden olevan tietyllä todennäköisyydellä
+kokonaisuutenakin samankaltaisia.
+
+Poikkeavuuksiin perustuvuvan algoritmin on etsittävä
+syötteestä piirteet ja valittava niistä epätyypillisimmät.
+Keskeinen ongelma onkin piirteen määrittely. Onglemaan
+ei ole yksikäsitteistä ratkaisua, ja määritelmä
+on tapauskohtaista. Esimerkiksi seuraavassa luvussa
+käsiteltävässä Sdhash-ohjelmistossa piirre on määritelty
+64 tavun merkkijonoksi \citep{roussev10}.
+% ^ cyber threat hunting
+% Breitinger et al.(Breitinger & Baier, 2012b)showed some weaknesses in sdhash and pre-sented improvements to the scheme | security analysis
+% However, its strong suit is the detection of fragments and not comparison of files [p.8, breitinger12].
+
+
+\section{Tavujono}
+
+Tavujonosyötteet muodostavat tiivisteen jakamalla syötteen lohkoiksi,
+joita verrataan samankaltaisuuden perusteella yhtäsuuruuden sijaan
+\parencite{martin-perez21}.
+Lohkoista rakennetaan syötteelle uusi esitystapa, joka sisältää
+yksinkertaistetun kuvauksen syötteestä. Muutokset alkuperäisessä
+syötteessä eivät vaikuta tietyissä rajoissa yksinkertaistettuun
+muotoon, jonka perusteella samankaltaisuudet voidaan edelleen
+määrittää. Tavujonotiivisteet eivät etsi syötteestä tietyntyyppisiä
+ominaisuuksia kuten ominaisuustiivisteet.
+
+Tavujonotiivisteille on määriteltävä logiikka, jolla lohkonta
+suoritetaan. Lohkot voivat olla myös vakiokokoisia, jos niiden
+tiivistykseen ei käytetä kryptografista tiivistettä; esimerkiksi
+Mvhash-b-ohjelmistossa lohkot ovat vakiokokoisia. Lohkon arvoksi
+asetetaan joko 0 tai 255, riippuen alkioiden enemmistöstä.
+Enemmistöperiaatteen sekä arvojen pienen määrän vuoksi lohkosta
+toiseen siirtyvien alkioiden vaikutus häipyy.
+

@@ -1,0 +1,154 @@
+\chapter{Soveltaminen haittaohjelmien torjunnassa\label{fuzzy-application}}
+
+% 4
+
+\section{Haittaohjelmien tunnistaminen}
+Haittaohjelmien torjunta on laaja toimintakenttä, joka pitää
+sisällääñ toisistaan poikkeavia osa-alueita. Haittaohjelmien
+tunnistaminen on torjuntatyön keskeinen osa-alue, joka
+sisältää myös laajan skaalan erilaisia lähestymistapoja.
+\textcite{aslan20} esittävät haittaohjelma-analyysin
+jaon staattiseeen sekä dynaamiseen analyysiin. Staattisessa analyysissa
+tutkitaan haittaohjelmaa suorittamatta sen ohjelmakoodia lainkaan.
+Dynaamisessa analyysissa keskitytään sen sijaan haittaohjelman 
+käyttäytymisen tutkimiseen ohjelmakoodia suorittamalla.
+
+Tiivistämisellä on merkitystä lähinnä staattisessa analyysissa.
+Haittaohjelmien tunnistuksessa on tyypillisesti käytetty menetelmänä
+haittaohjelmista luotujen tiivisteiden vertailua \parencite{sarantinos16}.
+Tunnettujen haittaohjelmien tiivisteistä pidetään yllä tietokantaa.
+Mikäli epäily haittaohjelmasta ilmenee, epäilty ohjelma tiivistetään
+ja sitä verrataan tietokannassa oleviin tiivisteisiin. Yhtäläinen tiiviste
+viittaa epäíllyn ohjelman olevan lähes varmuudella tunnettu haittaohjelma.
+Haittaohjelmaksi todettu ohjelma voidaan nyt eliminoida ilman tarvetta
+ohjelman suorituksenaikaisen toiminnan tarkastellulle dynaamisen
+analyysin keinoin.
+
+Perinteisesti haittaohjelmien tiivistämiseen on käytetty kryptografisia
+tiivisteitä, esimerkkeinä MD5 ja SHA-1 \parencite{sarantinos16}. Kryptografiset
+tiivisteet ovat suorituskykyisiä, mutta niillä ei voida tunnistaa muunneltuja
+haittaohjelmia. \textcite{roussev11} mainitsemia kryptografisten tiivisteiden
+rajoitteita ovat
+
+\begin{itemize}
+   \item Datan havaitseminen toisen datan sisältä
+   \item Lähdekoodiversioiden havaitseminen
+   \item Samaa alkuperää olevien dokumenttien tunnistaminen
+\end{itemize}
+
+On havaittu, että haittaohjelmia laativien tahojen toiminnassa
+esiintyy toistuvia kaavamaisuuksia. Ilmiö heijastuu levitettävissä
+haittaohjelmissa, joista löytyy yhteneviä piirteitä. Haittaohjelman
+valmistaja saattaa hyödyntää samaa tai samankaltaista lähdekoodia
+useassa haittaohjelmassa, ja tällaisten yhtäläisyyksien havaitseminen
+rajaa potentiaalisten haittaohjelmien joukkoa pienemmäksi.
+
+\section{Edellytykset}
+
+Ohjelmistojen toteutukset poikkeavat toisistaan, mikä aiheuttaa
+eroavaisuuksia tehtävistä suoriutumisessa. 
+Ohjelmistoja voidaan luokitella sen perusteella, kuinka
+ne määrittelevät samankaltaisuuden. Erilaisilla tavoilla
+tunnistaa samankaltaisuuksia on vahvuutensa sekä heikkoutensa.
+Tiettyyn tarkoitukseen optimaalisen ohjelmiston valinta
+on tilannesidonnainen, ja toiset ohjelmistot suoriutuvat
+paremmin tietyissä tilanteissa kuin toiset \parencite{pagani18}.
+
+Tyypillisesti ohjelmistojen eroja on havainnoitu lähinnä kokeellisesti
+\parencite{martin-perez21}.
+Ohjelmistojen lähestymistapojen suuri määrä vaikeuttaa sumeiden tiivisteiden
+vertailua. Sumeisiin tiivisteisiin liittyvän terminologian suhteen ei ole
+vallitsevaa konsensusta, eikä universaalia vertailua mahdollistavaa luokittelua
+ole ollut. \textcite{martin-perez21} esittävät luokittelun, joka mahdollistaa
+muun muassa suorituskykyä, tulosten luotettavuutta sekä hyökkäysalttiutta.
+tarkastelun.
+
+\textcite{tlsh} esittää tekijöitä, jotka on syytä ottaa huomioon sumean tiivistämisen ohjelmistoa valitessa.
+
+\begin{itemize}
+\item Samanakaltaisuuden havaitsemiskyky
+\item Kyky vastustaa hyökkäyksiä
+\item Tiivisteen koko ja sen luomiseen kuluva aika 
+\item Skaalautuus
+\end{itemize}
+
+Tarkkuus, jolla samankaltaisuuksia havaitaaan, on
+tärkeä sumean tiivisteen käyttökelpoisuutta kuvaava
+mittari. Tarkkuuteen vaikuttaaa toteutusperiaatteen
+lisäksi syötteenä annetun datan tyyppi. Esimerkiksi
+konteksiriippuvaisia paloittain määriteltyjä tiivisteitä,
+kuten ssdeep, ei pidetä soveltuvina lähdekoodianalyysiin
+\parencite{pagani18}. Epätodennäköisiin ominaisuuksiin
+perustuvat tiivisteet, kuten Sdhash, sopivat tällaiseen tarkoitukseen
+paremmin. Haittaohjelma-analyysissa keskeisessä roolissa on
+konekielisen ohjelmankoodin analysointi, joten valitun ohjelmiston
+vaikutus on suuri. Myös \textcite{roussev11} käsittelee Sdhashin
+tarkkuttaa, minkä perusteella Sdhashin kyky tunnistaa haittaohjelmia
+on ylivoimainen Ssdeepiin nähden. Ssdeepin, Sdhasin ja
+Mvhash-b:n keskinäistä tarkkuuseroa
+tutkivat \textcite{naik19} käyttäen WannaCry- ja
+WannaCryptor-haittaohjelmia. Kaikkien kolmen 
+todetaan suoriutuvan tehokkaasti tämäntyyppisten
+haittaohjelmien tunnistamisesta.
+
+\textcite{martin-perez21} esittää tiivisteiden toimintaan
+vaikuttaviksi tekijöiksi syötteen kattavuuden sekä
+tiivisteen koon. Ssdeepin ja Mvhash-b:n tiivisteet
+perustuvat koko syötteeseen, eivätkä muutokset syötteessä
+jää huomaamatta. Sdhashissa vain pieni osa syötteestä tiivistetään.
+Osittainen syötekattavuus mahdollistaa hyökkäyksiä, jotka eivät
+täydellä syötekattavuudella onnistu \parencite{martin-perez21}.
+
+\section{Haittaohjelmien tunnistamisen välttäminen}
+
+\textcite{pagani18} tutkivat Ssdeep-, Sdhash-, Tlsh- ja mrsh-v2-ohjelmistojen
+suoriutumista konekielisen ohjelmakoodin yhtäläisyyksien löytämisessä.
+Kolmessa tilanteessa analysoitiin kirjastojen tunnistamista,
+erilaisten käännöskonfiguraatoiden vaikutusta sekä ohjelmien samankaltaisuutta.
+
+Kirjastojen tunnistamisessa on kyse sisällytetyn datan havaitsemisesta
+suuremmasta datamäärästä. Havaintona esitetään, ettei yksikään
+ohjelmisto kyennyt yhdistämään kaikkia konekielisten objektitiedostojen
+sisältämiä kirjastoja kokonaisiin konekielisiin ohjelmiin. Eniten
+kirjastoja tunnisti Sdhash. Erityisesti heikoiten suorituneen Ssdeepin
+mainitaan tuottaneen kaikissa tapauksissa pienimmän samankaltaisuusarvon.
+
+Käännöskonfiguraatioiden kohdalla tutkittiin C-kääntäjän (gcc)
+optimointitasojen sekä eri kääntäjien käytön vaikutusta. Molemmissa
+tapauksissa Ssdeep suoriutui heikoimmin Sdhashin suoriutuessa
+paremmin. Ohjelmien samankaltaisuuden tunnistusta vertaillessa
+ohjelmakoodiin lisättiin sattumanvaraisesti tyhjiä konekäskyjä
+sekä vaihdettiin sattumanvaraisia konekäksyjä. Havaittiin,
+että jo muutamat muutokset tuottivat ajoittain käännettyyn
+ohjelmaan, jota ohjelmistot eivät tunnistaneet. Ilmiöstä
+todetaan, että pienet muutokset voivat saada aikaan
+muutoksia myös muualla ohjelmakoodissa johtaen
+tunnistamattomiin muutoksiin.
+
+Haittaohjelman tunnistamista voidaan vaikeuttaa monin tavoin.
+\textcite{aslan20} mainistevat useita menetelmiä, joilla haittaohjelman
+tunnistamista voidaan vaikeuttaa. Menetelmiä, jotka aiheuttavat haasteita
+sumeiden tiivistefunktioiden käytölle tunnistamisessa, ovat muun muassa
+lähdekoodin salaus, metamorfoosi, naamiointi ja ohjelmiston pakkaus eri tavoin.
+Kaikissa menetelmissä pyrkimysksenä on minimoida tiivistämisen hyöty
+staattisessa haittaohjelma-analyysissa. Metamorfisena toteutettu haittaohjelma
+muokkaa omia konekäskyjään pyrkien todellisuudessa käyttäytymiseen,
+joka ei suoraan ilmene lähdekoodista staattisen analyysin keinoin \parencite{aslan20}.
+
+Dataa voidaan naamioida semanttisen merkityksen muuttumatta siten, ettei se
+kuitenkaan vaikuta samanlaiselta \parencite{oliver14}. Sumeiden tiivisteiden
+tuloksi pyritään vääristämään naamioimalla dataa eri tavoin.
+Oliver, Forman ja Cheng, 2014 analysoi Ssdeep-, Sdhash- ja Tlsh-ohjelmistojen herkkyyttä muutoksille. Ohjelmakoodin muutosten analysoinnissa pyrittiin muokkaamaan lähdekooditiedostoja siten, että suoritettava ohjelma on ekvivalentti ja tuottaa tiivisteen, jonka perusteella se ei ole tulkittavissa samankaltaiseksi alkuperäisen kanssa. Tutkimuksessa tutkittiin keinoja, joilla konekielisestä ohjelmakoodista luotua tiivistettä voidaan
+muuttaa mahdollisimman paljon. Esitettyjä keinoja haittaohjelman naamioimiseksi
+ovat muun muassa
+
+\begin{itemize}
+   \item Loogisten JA- ja TAI-operaation järjestäminen uudelleen
+   \item Uusien kokonaisluku- ja merkkijonomuuttujien lisääminen
+   \item Funktioiden järjestyksen muuttaminen
+   \item Tyhjien käskyjen lisääminen
+   \item Satunnaisen binäärimuotoisen datan lisääminen
+   \item Merkkijonojen katkaiseminen
+\end{itemize}
+
+Tutkituista ohjelmstoista Ssdeep ja Sdhash eivät tunnistaneet kaikkia muunneltuja ohjelmia, mutta Tlsh kykeni tunnistamaan kaikki. Erityisesti muuttujien lisääminen laski Ssdeep-ohjelmiston tuottamaan vähäisintä yhtäläisyyttä kuvaavan arvon. Muutosten aiheuttamat erot tiivisteissä vaihtelevat menetelmittäin, ja eri ohjelmiston herkkyys muutoksille vaihtelee. Tulosten perusteella Tlsh-ohjelmiston esitetään olevaan sekä Ssdeep- ja Sdhash-ohjelmistoja luotettavampi ja turvallisempi vaihtoehto haittaohjelma-analyysiin.

@@ -1,28 +1,71 @@
-TLSH -- A Locality Sensitive Hash
+# TLSH - A Locality Sensitive Hash
 https://ieeexplore.ieee.org/abstract/document/6754635
 
-Lempel-Ziv Jaccard Distance, an effective alternative to ssdeep and sdhash
+# Lempel-Ziv Jaccard Distance, an effective alternative to ssdeep and sdhash
 https://www.sciencedirect.com/science/article/abs/pii/S1742287617302566
 
-An Efficient Piecewise Hashing Method for Computer Forensics
+# An Efficient Piecewise Hashing Method for Computer Forensics
 https://ieeexplore.ieee.org/abstract/document/4470474
 
-A Comprehensive Review on Malware Detection Approaches”
+# A Comprehensive Review on Malware Detection Approaches
 https://ieeexplore.ieee.org/document/8949524
 
-Anti-forensics in ssdeep similarity hashing
+# Anti-forensics in ssdeep similarity hashing
 https://ermerins.com/assets/docs/simhashing.pdf
 
-Identifying almost identical files using context triggered piecewise hashing
+# mvHash-B - a new approach for similarity preserving hashing
+https://dasec.h-da.de/wp-content/uploads/2013/04/2013_03_IMF_mvhash-B.pdf
+
+# Discussion on ssdeep and sdhash
+
+# ssdeep
+https://ssdeep-project.github.io/ssdeep/index.html
+
+# Identifying almost identical files using context triggered piecewise hashing
 https://www.sciencedirect.com/science/article/pii/S1742287606000764
 
-A Ransomware Detection Method Using Fuzzy Hashing for Mitigating the Risk of Occlusion of Information Systems
+# A Ransomware Detection Method Using Fuzzy Hashing for Mitigating the Risk of Occlusion of Information Systems
 https://ieeexplore.ieee.org/document/8984540
 
-Using Randomization to Attack Similarity Digests
+# Using Randomization to Attack Similarity Digests
+https://link.springer.com/chapter/10.1007/978-3-662-45670-5_19
 
-Beyond Precision and Recall: Understanding Uses (and Misuses) of Similarity Hashes in Binary Analysis
+# Beyond Precision and Recall: Understanding Uses (and Misuses) of Similarity Hashes in Binary Analysis
 https://pagabuc.me/docs/codaspy18_pagani.pdf
 
-ssdeep
-https://ssdeep-project.github.io/ssdeep/index.html
+# Hashing and Data Fingerprinting in Digital Forensics
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4812157
+
+# Experimental Study of Fuzzy Hashing in Malware Clustering Analysis
+https://www.usenix.org/system/files/conference/cset15/cset15-li.pdf
+
+# Fingerprint generation and fingerprint comparison
+Based on how the fuzzy hash functions encode the features and compute the final fingerprint, one can categorize existing fuzzy hash algorithms into the following two types: CTPH & BBH
+
+# Discusssion of flaws
+Awesome explanation on fuzzy hash types
+
+# An evaluation of forensic similarity hashes
+https://www.sciencedirect.com/science/article/pii/S1742287611000296
+#
+# When Similarity Digest Meets Vector Management System: A Survey on Similarity Hash Function
+https://arxiv.org/pdf/2109.08789.pdf
+
+# Winnowing: local algorithms for document fingerprinting
+https://theory.stanford.edu/~aiken/publications/papers/sigmod03.pdf
+
+# A Method of Piecewise Hash for Fuzzy Hashing 
+http://www.csroc.org.tw/journal/JOC30_2/JOC3002-13.pdf
+
+* Has some drawbacks mentioned
+
+# A New Edit Distance for Fuzzy Hashing Applications
+https://digital.csic.es/handle/10261/135088
+
+# Security and Implementation Analysis of the Similarity Digest sdhash
+https://www.dasec.h-da.de/wp-content/uploads/2012/08/2012_08_Breitinger_NeSeFo.pdf
+
+# Performance Issues about ContextTriggered Piecewise Hashing
+
+# Security Aspects of Piecewise Hashing in Computer Forensics
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5931110

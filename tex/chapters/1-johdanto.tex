@@ -1,0 +1,32 @@
+\chapter{Johdanto\label{intro}}
+ 
+Tietojenkäsittelyssä käsitellään valtavia määriä dataa. Laskentakyvyn kasvessa myös tiedonsiirto-
+ja tallenuskapasiteetti kehittyvät, ja tietojenkäsittelyn kehitys luo myös rikollisia intressejä
+edistäviä mahdollisuuksia. Sekä tekninen rikostutkinta että kyberrikollisuus ovat riippuvaisia
+tietotekniikan kehityksestä. Uudet innovaatiot synnyttyävät mahdollisuuksia kehittää rikollisia
+menetelmiä sekä toisaalta ratkaisuja haitallista toimintaa vastaaan.
+
+Kasvava datavirta helpottaa haittaohjelmien huomaaamatonta leviämistä, ja haittaohjelma saattaa
+jäädä kokonaan huomaamatta. Haittaohjelmien torjuntaa voidaan tietoisesti pyrkiä johtamaan harhaan
+aiheuttamalla aiheettomia osumia. Haitallisen datan tunnistaminen kasvavasta tietoliikenteestä
+edellyttää kohdennettuja resursseja sekä suorituskykyisiä ratkaisuja. Tiedon esittämiselle
+kompaktimmassa muodossa onkin tarvetta sen tehokkaan tunnistamisen vuoksi.
+
+Dataa voidaan tiivistää muun muassa pakkaus- ja tiivisteohjelmistoilla. Pakkauksesta poiketen
+tyypillisesti käytetyt kryptografiset tiivistefunktiot tiivistävät datan palauttamattomaan muotoon.
+Toisaalta tiiviste sisältää lähes uniikin tunnisteen, jolla alkuperäinen data on käytännössä
+tunnistettavissa. Tiivistystä voidaankin hyödyntää menetelmänä haittaohjelmien havaitsemisessa
+suuresta datamäärästä. Tyypillisesti tunnistetuista haittaohjelmista on luotu tiiviste, jolloin
+saman tiivisteeen tuottavaa ohjelmaa voidaan epäillä haittaohjelmaksi. Mikä tahansa muutos tuottaa
+kuitenkin tunnistamattomaan tiiviisteen perinteisesti tarkoitukseen käytetyillä kryptografisilla
+tiivistefunktioilla. Rikolliset tahot pyrkivät kiertämään haittaohjelmien torjuntamenetelmiä
+esimerkiksi tekemällä ohjelmistoon muutoksia. Muutettua haittaohjelmaa ei voida enää tunnistaa
+alkuperäiseksi tiivisteitä vertaamalla, vaikka toiminnallisuudeltaan ohjelma olisi identtinen.
+
+Seuraavassa luvussa esitellään yleisesti sumean tiivisteen käsite sekä taustoitetaan eri
+tiivistetyyppien toimintaperiaate. Luvussa 3 käydään läpi kolme sumeiden tiivisteiden
+prosessointiin käytettyä ohjelmistoa: Ssdeep, Sdhash sekä Mvhash-b. Luvussa 4 käsitellään
+sumeiden tiivsteiden soveltamista haittaohjelma-analyysissa edellytyksineen. Lisäksi luvussa
+analysoidaan menetelmiä, joilla haittaohjelmien tunnistamista sumein tiivistein voidaan johtaa
+harhaan. Luvussa 5 käsitellään sumean tiivistämisen heikkouksia sekä tarkastellaan ohjelmistojen
+eroavaisuuksien merkitystä haittaohjelma-analyysissa.
